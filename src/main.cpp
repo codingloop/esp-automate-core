@@ -14,6 +14,7 @@ void setup() {
   pinMode(ledPIN, OUTPUT);
   Serial.begin(115200);
   SerialBT.begin("codingloop");
+  SerialBT.end();
   Serial.println("Bluetooth Started! Ready to pair...");
 }
 
@@ -38,4 +39,7 @@ void loop() {
   {
     digitalWrite(ledPIN, LOW);
   }
+
+  Serial.println(touchRead(T1));
+  delay(1000);
 }
