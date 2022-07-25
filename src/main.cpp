@@ -1,45 +1,59 @@
-#include "BluetoothSerial.h"
-
-/* Check if Bluetooth configurations are enabled in the SDK */
-/* If not, then you have to recompile the SDK */
-#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
-#error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
-#endif
+#include "Arduino.h"
 
 #define ledPIN 2
-BluetoothSerial SerialBT;
-byte BTData;
+
+int counter = 0;
+bool on = true;
+TaskHandle_t bleServer;
+
+
+void handleBleServer( void * pvParameters ){
+  Serial.print("Task2 running on core ");
+  Serial.println(xPortGetCoreID());
+  for (;;) {
+    delay(1000);
+    Serial.print("I am thread runner");
+  }
+}
+
 
 void setup() {
   pinMode(ledPIN, OUTPUT);
   Serial.begin(115200);
-  SerialBT.begin("codingloop");
-  SerialBT.end();
-  Serial.println("Bluetooth Started! Ready to pair...");
+
+  xTaskCreatePinnedToCore(
+                    handleBleServer,   /* Task function. */
+                    "Task1",     /* name of task. */
+                    10000,       /* Stack size of task */
+                    NULL,        /* parameter of the task */
+                    1,           /* priority of the task */
+                    &bleServer,      /* Task handle to keep track of created task */
+                    0);          /* pin task to core 0 */                  
+  delay(500); 
+
+  // //create a task that will be executed in the Task2code() function, with priority 1 and executed on core 1
+  // xTaskCreatePinnedToCore(
+  //                   Task2code,   /* Task function. */
+  //                   "Task2",     /* name of task. */
+  //                   10000,       /* Stack size of task */
+  //                   NULL,        /* parameter of the task */
+  //                   1,           /* priority of the task */
+  //                   &Task2,      /* Task handle to keep track of created task */
+  //                   1);          /* pin task to core 1 */
+  //   delay(500); 
 }
 
 void loop() {
-  if(SerialBT.available())
-  {
-    BTData = SerialBT.read();
-    Serial.write(BTData);
+  if (on) {
+    on = false;
+  } else {
+    on = true;
   }
-
-  /* If received Character is 1, then turn ON the LED */
-  /* You can also compare the received data with decimal equivalent */
-  /* 48 for 0 and 49 for 1 */
-  /* if(BTData == 48) or if(BTData == 49) */
-  if(BTData == '1')
-  {
-    digitalWrite(ledPIN, HIGH);
+  counter++;
+  if (counter > 10) {
+    counter = 0;
   }
-  
-  /* If received Character is 0, then turn OFF the LED */
-  if(BTData == '0')
-  {
-    digitalWrite(ledPIN, LOW);
-  }
-
-  Serial.println(touchRead(T1));
+  Serial.print(vTaskGetInfo(bleServer));
+  digitalWrite(ledPIN, on);
   delay(1000);
 }
