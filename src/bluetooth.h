@@ -1,7 +1,30 @@
-void bluetoothService() {
+#include "Arduino.h"
+#include "BluetoothSerial.h"
 
+
+volatile bool isPairEnabled;
+
+void disableBluetoothService() {
+    isPairEnabled = false;
 }
 
+void bluetoothService( void * pvParameters ) {
+    if (digitalRead(T4)) {
+        isPairEnabled = true;
+        attachInterrupt(digitalPinToInterrupt(T4), disableBluetoothService, ONLOW);
+        SerialBT.begin("codingloop");
+    }
+//   Serial.print("Task2 running on core ");
+//   Serial.println(xPortGetCoreID());
+  while (isPairEnabled) {
+        if(SerialBT.available())
+        {
+            BTData = SerialBT.read();
+            Serial.write(BTData);
+        }
+  }
+  SerialBT.end();
+}
 
 // #include "BluetoothSerial.h"
 

@@ -1,4 +1,5 @@
 #include "Arduino.h"
+#include "bluetooth.h"
 
 #define ledPIN 2
 
@@ -16,10 +17,8 @@ void handleBleServer( void * pvParameters ){
   }
 }
 
-
-void setup() {
-  pinMode(ledPIN, OUTPUT);
-  Serial.begin(115200);
+void managePairMode() {
+  attachInterrupt(digitalPinToInterrupt(T4), bluetoothService, ONHIGH);
 
   xTaskCreatePinnedToCore(
                     handleBleServer,   /* Task function. */
@@ -28,7 +27,15 @@ void setup() {
                     NULL,        /* parameter of the task */
                     1,           /* priority of the task */
                     &bleServer,      /* Task handle to keep track of created task */
-                    0);          /* pin task to core 0 */                  
+                    0);          /* pin task to core 0 */     
+}
+
+
+void setup() {
+  pinMode(ledPIN, OUTPUT);
+  Serial.begin(115200);
+  managePairMode();
+             
   delay(500); 
 
   // //create a task that will be executed in the Task2code() function, with priority 1 and executed on core 1
@@ -53,7 +60,7 @@ void loop() {
   if (counter > 10) {
     counter = 0;
   }
-  Serial.print(vTaskGetInfo(bleServer));
+  // Serial.print(vTaskGetInfo(bleServer));
   digitalWrite(ledPIN, on);
   delay(1000);
 }
