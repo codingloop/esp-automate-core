@@ -10,8 +10,8 @@ int counter = 0;
 bool on = true;
 TaskHandle_t bleServer;
 
-const char* ssid     = "Shivanugraha-Office";
-const char* password = "Harigadde@39";
+const char* ssid     = "Ishu";
+const char* password = "ishuharigadde";
 
 WebServer server(80);
 
@@ -36,13 +36,13 @@ void managePairMode() {
 
 
 void handleRoot() {
-  // String q1=server.arg("pin");
-  // if (q1=="high") {
-  //   digitalWrite(ledPIN, HIGH);
-  // } else if (q1=="low") {
-  //   digitalWrite(ledPIN, LOW);
-  // }
-  server.send(200, "text/plain", "Invalid data provided");
+  String q1=server.arg("pin");
+  if (q1=="high") {
+    digitalWrite(ledPIN, HIGH);
+  } else if (q1=="low") {
+    digitalWrite(ledPIN, LOW);
+  }
+  server.send(200, "text/html", MAIN_page);
 }
 
 void changedata()
