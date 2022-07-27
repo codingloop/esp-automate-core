@@ -1,11 +1,19 @@
 #include "Arduino.h"
 #include "bluetooth.h"
+#include <WebServer.h>
+#include <WiFiClient.h>
+#include <root.h>
 
 #define ledPIN 2
 
 int counter = 0;
 bool on = true;
 TaskHandle_t bleServer;
+
+const char* ssid     = "Shivanugraha-Office";
+const char* password = "Harigadde@39";
+
+WebServer server(80);
 
 
 void triggerBLEServer(){
@@ -27,25 +35,65 @@ void managePairMode() {
 }
 
 
+void handleRoot() {
+  // String q1=server.arg("pin");
+  // if (q1=="high") {
+  //   digitalWrite(ledPIN, HIGH);
+  // } else if (q1=="low") {
+  //   digitalWrite(ledPIN, LOW);
+  // }
+  server.send(200, "text/plain", "Invalid data provided");
+}
+
+void changedata()
+{
+  String q1=server.arg("pin");
+  server.send(200,"text","Invalid data provided");
+}
+
+void handleNotFound() {
+  digitalWrite(ledPIN, 1);
+  String message = "File Not Found\n\n";
+  message += "URI: ";
+  message += server.uri();
+  message += "\nMethod: ";
+  message += (server.method() == HTTP_GET) ? "GET" : "POST";
+  message += "\nArguments: ";
+  message += server.args();
+  message += "\n";
+  for (uint8_t i = 0; i < server.args(); i++) {
+    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+  }
+  server.send(404, "text/plain", message);
+  digitalWrite(ledPIN, 0);
+}
+
+
 void setup() {
-  pinMode(ledPIN, OUTPUT);
+  pinMode(ledPIN, INPUT_PULLUP);
   Serial.begin(115200);
+  
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+    }
+
+    Serial.println("");
+    Serial.println("WiFi connected.");
+    Serial.println("IP address: ");
+    Serial.println(WiFi.localIP());
+    
+    server.on("/", handleRoot);
+    server.onNotFound(handleNotFound);
+    server.begin();
+
+    
   managePairMode();
-             
-  delay(500); 
 }
 
 void loop() {
-  if (on) {
-    on = false;
-  } else {
-    on = true;
-  }
-  counter++;
-  if (counter > 10) {
-    counter = 0;
-  }
-  // Serial.print(vTaskGetInfo(bleServer));
-  digitalWrite(ledPIN, on);
-  delay(1000);
+  server.handleClient();
 }
