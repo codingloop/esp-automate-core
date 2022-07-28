@@ -12,7 +12,7 @@ void disableBluetoothService() {
 void bluetoothService( void * pvParameters ) {
     if (digitalRead(2)) {
         isPairEnabled = true;
-        attachInterrupt(digitalPinToInterrupt(2), disableBluetoothService, ONLOW);
+        attachInterrupt(digitalPinToInterrupt(T5), disableBluetoothService, ONLOW);
         SerialBT.begin("codingloop");
     }
   while (isPairEnabled) {

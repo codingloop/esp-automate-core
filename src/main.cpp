@@ -5,33 +5,41 @@
 #include <root.h>
 
 #define ledPIN 2
+#define iPin T5
+
 
 int counter = 0;
 bool on = true;
 TaskHandle_t bleServer;
 
-const char* ssid     = "Ishu";
-const char* password = "ishuharigadde";
+const char* ssid     = "Shivanugraha-Office";
+const char* password = "Harigadde@39";
 
 WebServer server(80);
 
+portMUX_TYPE synch = portMUX_INITIALIZER_UNLOCKED;
 
 void triggerBLEServer(){
   // Serial.print("Task2 running on core ");
   // Serial.println(xPortGetCoreID());
+  portENTER_CRITICAL(&synch);
+  Serial.print("Interrupt");
+  digitalWrite(ledPIN, digitalRead(iPin));
   
-  xTaskCreatePinnedToCore(
-                    bluetoothService,   /* Task function. */
-                    "Task1",     /* name of task. */
-                    10000,       /* Stack size of task */
-                    NULL,        /* parameter of the task */
-                    1,           /* priority of the task */
-                    &bleServer,      /* Task handle to keep track of created task */
-                    1);          /* pin task to core 0 */     
+  // xTaskCreatePinnedToCore(
+  //                   bluetoothService,   /* Task function. */
+  //                   "Task1",     /* name of task. */
+  //                   10000,       /* Stack size of task */
+  //                   NULL,        /* parameter of the task */
+  //                   1,           /* priority of the task */
+  //                   &bleServer,      /* Task handle to keep track of created task */
+  //                   1);          /* pin task to core 0 */  
+
+  portEXIT_CRITICAL(&synch);
 }
 
 void managePairMode() {
-  attachInterrupt(digitalPinToInterrupt(ledPIN), triggerBLEServer, ONHIGH);
+  attachInterrupt(digitalPinToInterrupt(iPin), triggerBLEServer, RISING);
 }
 
 
@@ -70,7 +78,8 @@ void handleNotFound() {
 
 
 void setup() {
-  pinMode(ledPIN, INPUT_PULLUP);
+  pinMode(ledPIN, OUTPUT);
+  pinMode(iPin, INPUT_PULLUP);
   Serial.begin(115200);
   
   WiFi.mode(WIFI_STA);
@@ -92,6 +101,8 @@ void setup() {
 
     
   managePairMode();
+  digitalWrite(T5, LOW);
+  Serial.println(digitalRead(T5));
 }
 
 void loop() {
