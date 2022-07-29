@@ -3,6 +3,7 @@
 #include <WebServer.h>
 #include <WiFiClient.h>
 #include <root.h>
+#include<Ticker.h>
 
 #define ledPIN 2
 #define iPin T5
@@ -10,21 +11,25 @@
 
 int counter = 0;
 bool on = true;
+volatile int c = 0;
 TaskHandle_t bleServer;
 
 const char* ssid     = "Shivanugraha-Office";
 const char* password = "Harigadde@39";
+Ticker t1;
 
 WebServer server(80);
 
 portMUX_TYPE synch = portMUX_INITIALIZER_UNLOCKED;
 
+
+
 void triggerBLEServer(){
   // Serial.print("Task2 running on core ");
   // Serial.println(xPortGetCoreID());
   portENTER_CRITICAL(&synch);
-  Serial.print("Interrupt");
   digitalWrite(ledPIN, digitalRead(iPin));
+  c+=1;
   
   // xTaskCreatePinnedToCore(
   //                   bluetoothService,   /* Task function. */
@@ -39,7 +44,13 @@ void triggerBLEServer(){
 }
 
 void managePairMode() {
-  attachInterrupt(digitalPinToInterrupt(iPin), triggerBLEServer, RISING);
+  attachInterrupt(digitalPinToInterrupt(iPin), triggerBLEServer, HIGH);
+}
+
+void printCount() {
+  Serial.println(c);
+  Serial.println(digitalRead(iPin));
+
 }
 
 
@@ -79,7 +90,7 @@ void handleNotFound() {
 
 void setup() {
   pinMode(ledPIN, OUTPUT);
-  pinMode(iPin, INPUT_PULLUP);
+  pinMode(iPin, INPUT_PULLDOWN);
   Serial.begin(115200);
   
   WiFi.mode(WIFI_STA);
@@ -103,6 +114,7 @@ void setup() {
   managePairMode();
   digitalWrite(T5, LOW);
   Serial.println(digitalRead(T5));
+  t1.attach(3, printCount);
 }
 
 void loop() {
