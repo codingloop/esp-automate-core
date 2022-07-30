@@ -22,23 +22,24 @@ WebServer server(80);
 
 portMUX_TYPE synch = portMUX_INITIALIZER_UNLOCKED;
 
-
+void managePairMode();
 
 void triggerBLEServer(){
   // Serial.print("Task2 running on core ");
   // Serial.println(xPortGetCoreID());
   portENTER_CRITICAL(&synch);
+  detachInterrupt(digitalPinToInterrupt(iPin));
   digitalWrite(ledPIN, digitalRead(iPin));
   c+=1;
   
-  // xTaskCreatePinnedToCore(
-  //                   bluetoothService,   /* Task function. */
-  //                   "Task1",     /* name of task. */
-  //                   10000,       /* Stack size of task */
-  //                   NULL,        /* parameter of the task */
-  //                   1,           /* priority of the task */
-  //                   &bleServer,      /* Task handle to keep track of created task */
-  //                   1);          /* pin task to core 0 */  
+  xTaskCreatePinnedToCore(
+                    bluetoothService,   /* Task function. */
+                    "Task1",     /* name of task. */
+                    10000,       /* Stack size of task */
+                    &managePairMode,        /* parameter of the task */
+                    1,           /* priority of the task */
+                    &bleServer,      /* Task handle to keep track of created task */
+                    1);          /* pin task to core 0 */  
 
   portEXIT_CRITICAL(&synch);
 }
