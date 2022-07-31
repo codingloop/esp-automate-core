@@ -2,51 +2,38 @@
 #include "bluetooth.h"
 #include <WebServer.h>
 #include <WiFiClient.h>
-#include <root.h>
-#include<Ticker.h>
+#include <Ticker.h>
 
-#define ledPIN 2
-#define iPin T5
-
-
-int counter = 0;
-bool on = true;
-volatile int c = 0;
-TaskHandle_t bleServer;
 
 const char* ssid     = "Shivanugraha-Office";
 const char* password = "Harigadde@39";
 Ticker t1;
 
-WebServer server(80);
+// WebServer server(80);
 
-portMUX_TYPE synch = portMUX_INITIALIZER_UNLOCKED;
 
-void managePairMode();
 
-void triggerBLEServer(){
-  // Serial.print("Task2 running on core ");
-  // Serial.println(xPortGetCoreID());
-  portENTER_CRITICAL(&synch);
-  detachInterrupt(digitalPinToInterrupt(iPin));
-  digitalWrite(ledPIN, digitalRead(iPin));
-  c+=1;
+void startBluetoothService(){
+  xTaskCreatePinnedToCore(
+                    bluetoothService,   /* Task function. */
+                    "BlueetoothService",     /* name of task. */
+                    10000,       /* Stack size of task */
+                    NULL,        /* parameter of the task */
+                    1,           /* priority of the task */
+                    &bleServer,      /* Task handle to keep track of created task */
+                    1); 
   
   xTaskCreatePinnedToCore(
                     bluetoothService,   /* Task function. */
-                    "Task1",     /* name of task. */
+                    "BlueetoothService",     /* name of task. */
                     10000,       /* Stack size of task */
-                    &managePairMode,        /* parameter of the task */
+                    NULL,        /* parameter of the task */
                     1,           /* priority of the task */
                     &bleServer,      /* Task handle to keep track of created task */
                     1);          /* pin task to core 0 */  
 
-  portEXIT_CRITICAL(&synch);
 }
 
-void managePairMode() {
-  attachInterrupt(digitalPinToInterrupt(iPin), triggerBLEServer, HIGH);
-}
 
 void printCount() {
   Serial.println(c);
@@ -111,11 +98,7 @@ void setup() {
     server.onNotFound(handleNotFound);
     server.begin();
 
-    
-  managePairMode();
-  digitalWrite(T5, LOW);
-  Serial.println(digitalRead(T5));
-  t1.attach(3, printCount);
+  startBluetoothService();
 }
 
 void loop() {
