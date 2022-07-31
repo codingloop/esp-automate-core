@@ -1,5 +1,5 @@
 #include "BluetoothSerial.h"
-
+#include "utils.h"
 
 volatile bool isPairEnabled;
 BluetoothSerial SerialBT;
@@ -9,21 +9,33 @@ void disableBluetoothService() {
     isPairEnabled = false;
 }
 
+void executeCommand(String cmd, String value) {
+    value.trim();
+
+    if (cmd == "ssid") {
+        writeToEEPROM(value, "", 0, 30, false);
+    } else if (cmd == "password") {
+        writeToEEPROM(value, "", 31, 60, false);
+    } else if (cmd == "reset") {
+        resetESP();
+    }
+}
+
+void parseCommand(String command) {
+    command.trim();
+    int actionIndex = command.indexOf("=");
+    if (actionIndex == -1) {
+       executeCommand(command, ""); 
+    }
+    executeCommand(command.substring(0, actionIndex), command.substring(actionIndex+1, command.length));
+}
+
 void bluetoothService( void * pvParameters ) {
-    Serial.println("i am here");
-    Serial.println(digitalRead(12));
-    if (digitalRead(12)) {
-        Serial.println("i am here in wq ds ds");
-    }
-    if (digitalRead(12) == 1) {
-        Serial.println("i am here second check");
-    }
-    if (digitalRead(12)) {
-        isPairEnabled = true;
-        attachInterrupt(digitalPinToInterrupt(T5), disableBluetoothService, ONLOW);
-        SerialBT.begin("codingloop");
-    }
-  while (isPairEnabled) {
+    // writeToEEPROM("Shivanugraha-office", "", 0, 30, false);
+    // writeToEEPROM("Harigadde@39", "", 31, 60, false);
+   
+    SerialBT.begin("codingloop");
+    while (isPairEnabled) {
         if(SerialBT.available())
         {
             BTData = SerialBT.read();

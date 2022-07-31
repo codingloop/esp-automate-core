@@ -1,23 +1,19 @@
 #include "Arduino.h"
 #include "EEPROM.h"
 
-String readFromEEPROM(byte i1,byte i2)
+String readFromEEPROM(byte start,byte end)
 {
-  int l=i2;
-  String c;
-  int count=0;
-  byte re;
-  for(int i=i1;i<l;i++)
+  String readValue;
+  byte reader;
+  for(int i=start; i<end; i++)
   {
-    if((re=EEPROM.read(i))==0)
+    if((reader=EEPROM.read(i))==0)
     {
       break;
     }
-    c[count]=(char)re;
-    count++;
+    readValue.concat((char)reader);
   }
-  c.trim();
-  return c;
+  return readValue;
 }
 
 boolean writeToEEPROM(String newValue,String oldValue,byte startByte,byte endByte, bool verify)
@@ -46,4 +42,17 @@ boolean writeToEEPROM(String newValue,String oldValue,byte startByte,byte endByt
       EEPROM.write(i, newValue[j]);
     }
     EEPROM.commit();
+    return true;
+}
+
+const char* routerSSID() {
+    readFromEEPROM(0, 30);
+}
+
+const char* routerPassword() {
+    readFromEEPROM(31, 60);
+}
+
+void resetESP() {
+    
 }

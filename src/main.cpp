@@ -2,55 +2,31 @@
 #include "bluetooth.h"
 #include <WebServer.h>
 #include <WiFiClient.h>
-#include <Ticker.h>
+#include <utils.h>
+#include <EEPROM.h>
 
 
-const char* ssid     = "Shivanugraha-Office";
-const char* password = "Harigadde@39";
-Ticker t1;
-
-// WebServer server(80);
-
+TaskHandle_t blutoothTask;
+WebServer server(80);
 
 
 void startBluetoothService(){
-  xTaskCreatePinnedToCore(
-                    bluetoothService,   /* Task function. */
-                    "BlueetoothService",     /* name of task. */
-                    10000,       /* Stack size of task */
-                    NULL,        /* parameter of the task */
-                    1,           /* priority of the task */
-                    &bleServer,      /* Task handle to keep track of created task */
-                    1); 
-  
-  xTaskCreatePinnedToCore(
-                    bluetoothService,   /* Task function. */
-                    "BlueetoothService",     /* name of task. */
-                    10000,       /* Stack size of task */
-                    NULL,        /* parameter of the task */
-                    1,           /* priority of the task */
-                    &bleServer,      /* Task handle to keep track of created task */
-                    1);          /* pin task to core 0 */  
+  xTaskCreatePinnedToCore(bluetoothService, "BlueetoothService", 10000, NULL, 1, &blutoothTask, 1);          
 
 }
 
 
-void printCount() {
-  Serial.println(c);
-  Serial.println(digitalRead(iPin));
-
-}
 
 
-void handleRoot() {
-  String q1=server.arg("pin");
-  if (q1=="high") {
-    digitalWrite(ledPIN, HIGH);
-  } else if (q1=="low") {
-    digitalWrite(ledPIN, LOW);
-  }
-  server.send(200, "text/html", MAIN_page);
-}
+// void handleRoot() {
+//   String q1=server.arg("pin");
+//   if (q1=="high") {
+//     digitalWrite(ledPIN, HIGH);
+//   } else if (q1=="low") {
+//     digitalWrite(ledPIN, LOW);
+//   }
+//   server.send(200, "text/html", MAIN_page);
+// }
 
 void changedata()
 {
@@ -59,7 +35,6 @@ void changedata()
 }
 
 void handleNotFound() {
-  digitalWrite(ledPIN, 1);
   String message = "File Not Found\n\n";
   message += "URI: ";
   message += server.uri();
@@ -72,17 +47,16 @@ void handleNotFound() {
     message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
   }
   server.send(404, "text/plain", message);
-  digitalWrite(ledPIN, 0);
 }
 
 
 void setup() {
-  pinMode(ledPIN, OUTPUT);
-  pinMode(iPin, INPUT_PULLDOWN);
   Serial.begin(115200);
+  EEPROM.begin(512);
+  startBluetoothService();
   
   WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
+  WiFi.begin(routerSSID(), routerPassword());
 
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
@@ -94,11 +68,13 @@ void setup() {
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
     
-    server.on("/", handleRoot);
+    // server.on("/", handleRoot);
     server.onNotFound(handleNotFound);
     server.begin();
 
-  startBluetoothService();
+
+
+
 }
 
 void loop() {
