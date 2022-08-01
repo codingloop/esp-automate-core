@@ -3,7 +3,7 @@
 
 volatile bool isPairEnabled;
 BluetoothSerial SerialBT;
-byte BTData;
+String BTData;
 
 void disableBluetoothService() {
     isPairEnabled = false;
@@ -21,13 +21,13 @@ void executeCommand(String cmd, String value) {
     }
 }
 
-void parseCommand(String command) {
+void parseAndExecCommand(String command) {
     command.trim();
     int actionIndex = command.indexOf("=");
     if (actionIndex == -1) {
        executeCommand(command, ""); 
     }
-    executeCommand(command.substring(0, actionIndex), command.substring(actionIndex+1, command.length));
+    executeCommand(command.substring(0, actionIndex), command.substring(actionIndex+1, command.length()));
 }
 
 void bluetoothService( void * pvParameters ) {
@@ -38,8 +38,9 @@ void bluetoothService( void * pvParameters ) {
     while (isPairEnabled) {
         if(SerialBT.available())
         {
-            BTData = SerialBT.read();
+            BTData = SerialBT.readString();
             Serial.write(BTData);
+            parseAndExecCommand(BTData);
         }
   }
   SerialBT.end();
