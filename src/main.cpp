@@ -1,18 +1,20 @@
 #include "Arduino.h"
-#include "bluetooth.h"
 #include <WebServer.h>
 #include <WiFiClient.h>
-#include <utils.h>
 #include <EEPROM.h>
 
 
-TaskHandle_t blutoothTask;
 WebServer server(80);
+
+void fuckFunction(void * dj) {
+
+}
 
 
 void startBluetoothService(){
-  xTaskCreatePinnedToCore(bluetoothService, "BlueetoothService", 10000, NULL, 1, &blutoothTask, 1);          
+  // xTaskCreatePinnedToCore(bluetoothService, "BlueetoothService", 10000, NULL, 1, &blutoothTask, 1);
 
+ xTaskCreatePinnedToCore(fuckFunction, "ClockTask", 10000, NULL, 20, NULL, 0);
 }
 
 
@@ -53,10 +55,10 @@ void handleNotFound() {
 void setup() {
   Serial.begin(115200);
   EEPROM.begin(512);
-  startBluetoothService();
+  // startBluetoothService();
   
   WiFi.mode(WIFI_STA);
-  WiFi.begin(routerSSID(), routerPassword());
+  WiFi.begin("fuck", "gh");
 
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);

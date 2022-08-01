@@ -3,7 +3,7 @@
 
 String readFromEEPROM(byte start,byte end)
 {
-  String readValue;
+  String readValue = "";
   byte reader;
   for(int i=start; i<end; i++)
   {
@@ -45,12 +45,14 @@ boolean writeToEEPROM(String newValue,String oldValue,byte startByte,byte endByt
     return true;
 }
 
-const char* routerSSID() {
-    readFromEEPROM(0, 30);
+const String routerSSID() {
+  return "";
+  return readFromEEPROM(0,30);
 }
 
-const char* routerPassword() {
-    readFromEEPROM(31, 60);
+const String routerPassword() {
+  return "";
+    return readFromEEPROM(31, 60);
 }
 
 void resetESP() {

@@ -1,50 +1,50 @@
-#include "BluetoothSerial.h"
-#include "utils.h"
+// #include "BluetoothSerial.h"
+// #include "utils.h"
 
-volatile bool isPairEnabled;
-BluetoothSerial SerialBT;
-String BTData;
+// volatile bool isPairEnabled;
+// BluetoothSerial SerialBT;
+// String BTData;
 
-void disableBluetoothService() {
-    isPairEnabled = false;
-}
+// void disableBluetoothService() {
+//     isPairEnabled = false;
+// }
 
-void executeCommand(String cmd, String value) {
-    value.trim();
+// void executeCommand(String cmd, String value) {
+//     value.trim();
 
-    if (cmd == "ssid") {
-        writeToEEPROM(value, "", 0, 30, false);
-    } else if (cmd == "password") {
-        writeToEEPROM(value, "", 31, 60, false);
-    } else if (cmd == "reset") {
-        resetESP();
-    }
-}
+//     if (cmd == "ssid") {
+//         writeToEEPROM(value, "", 0, 30, false);
+//     } else if (cmd == "password") {
+//         writeToEEPROM(value, "", 31, 60, false);
+//     } else if (cmd == "reset") {
+//         resetESP();
+//     }
+// }
 
-void parseAndExecCommand(String command) {
-    command.trim();
-    int actionIndex = command.indexOf("=");
-    if (actionIndex == -1) {
-       executeCommand(command, ""); 
-    }
-    executeCommand(command.substring(0, actionIndex), command.substring(actionIndex+1, command.length()));
-}
+// void parseAndExecCommand(String command) {
+//     command.trim();
+//     int actionIndex = command.indexOf("=");
+//     if (actionIndex == -1) {
+//        executeCommand(command, ""); 
+//     }
+//     executeCommand(command.substring(0, actionIndex), command.substring(actionIndex+1, command.length()));
+// }
 
 void bluetoothService( void * pvParameters ) {
     // writeToEEPROM("Shivanugraha-office", "", 0, 30, false);
     // writeToEEPROM("Harigadde@39", "", 31, 60, false);
    
-    SerialBT.begin("codingloop");
-    while (isPairEnabled) {
-        if(SerialBT.available())
-        {
-            BTData = SerialBT.readString();
-            Serial.write(BTData);
-            parseAndExecCommand(BTData);
-        }
-  }
-  SerialBT.end();
-   Serial.write("Ending pairmode");
+    // SerialBT.begin("codingloop");
+//     while (isPairEnabled) {
+//         if(SerialBT.available())
+//         {
+//             BTData = SerialBT.readString();
+//             Serial.println(BTData.c_str());
+//             parseAndExecCommand(BTData);
+//         }
+//   }
+//   SerialBT.end();
+//    Serial.write("Ending pairmode");
 }
 
 // #include "BluetoothSerial.h"
