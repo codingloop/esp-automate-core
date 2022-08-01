@@ -2,19 +2,17 @@
 #include <WebServer.h>
 #include <WiFiClient.h>
 #include <EEPROM.h>
+#include <bluetooth.h>
 
 
 WebServer server(80);
+const char * ssid = "Shivanugraha-Office";
+const char * password = "Harigadde@39";
 
-void fuckFunction(void * dj) {
-
-}
 
 
 void startBluetoothService(){
-  // xTaskCreatePinnedToCore(bluetoothService, "BlueetoothService", 10000, NULL, 1, &blutoothTask, 1);
-
- xTaskCreatePinnedToCore(fuckFunction, "ClockTask", 10000, NULL, 20, NULL, 0);
+  xTaskCreatePinnedToCore(bluetoothService, "BlueetoothService", 10000, NULL, 1, NULL, 1);
 }
 
 
@@ -55,10 +53,13 @@ void handleNotFound() {
 void setup() {
   Serial.begin(115200);
   EEPROM.begin(512);
-  // startBluetoothService();
+  startBluetoothService();
+  Serial.println(routerSSID().c_str());
+  Serial.println(routerPassword().c_str());
   
   WiFi.mode(WIFI_STA);
-  WiFi.begin("fuck", "gh");
+  WiFi.begin(routerSSID().c_str(), routerPassword().c_str());
+  // WiFi.begin(ssid, password);
 
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
@@ -82,3 +83,7 @@ void setup() {
 void loop() {
   server.handleClient();
 }
+
+
+
+

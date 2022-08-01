@@ -17,7 +17,10 @@ String readFromEEPROM(byte start,byte end)
 }
 
 boolean writeToEEPROM(String newValue,String oldValue,byte startByte,byte endByte, bool verify)
+  
 {
+  Serial.println("Writing value");
+Serial.println(newValue);
     // Verify value existing in EEPROM and old-value passed are same
     if (verify) {
         String oldValueStored = readFromEEPROM(startByte, endByte);
@@ -46,12 +49,10 @@ boolean writeToEEPROM(String newValue,String oldValue,byte startByte,byte endByt
 }
 
 const String routerSSID() {
-  return "";
   return readFromEEPROM(0,30);
 }
 
 const String routerPassword() {
-  return "";
     return readFromEEPROM(31, 60);
 }
 
