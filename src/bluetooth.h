@@ -15,9 +15,9 @@ void disableBluetoothService() {
 
 void executeCommand(String cmd, String value) {
     value.trim();
-    Serial.println("Received cmd and value");
-    Serial.println(cmd);
-    Serial.println(value);
+    // Serial.println("Received cmd and value");
+    // Serial.println(cmd);
+    // Serial.println(value);
     if (cmd == "ssid") {
         writeToEEPROM(value, "", ssid_s, ssid_e, false);
     } else if (cmd == "password") {
@@ -27,7 +27,7 @@ void executeCommand(String cmd, String value) {
     } else if (cmd == "disable") {
         disableBluetoothService();
     } else if (cmd == "getip") {
-        SerialBT.print(getIP());
+        SerialBT.println(getIP());
     }
 }
 
@@ -36,6 +36,7 @@ void parseAndExecCommand(String command) {
     int actionIndex = command.indexOf("=");
     if (actionIndex == -1) {
         executeCommand(command, "");
+        return;
     }
     executeCommand(command.substring(0, actionIndex), command.substring(actionIndex + 1, command.length()));
 }
@@ -45,7 +46,6 @@ void bluetoothService(void* pvParameters) {
     while (isPairEnabled) {
         if (SerialBT.available()) {
             BTData = SerialBT.readString();
-            Serial.println(BTData.c_str());
             parseAndExecCommand(BTData);
         }
         vTaskDelay(1000);

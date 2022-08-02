@@ -58,6 +58,7 @@ String getIP() {
 }
 
 void resetESP() {
+    ESP.restart();
 }
 
 #endif
