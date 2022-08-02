@@ -30,25 +30,24 @@ void parseAndExecCommand(String command) {
     command.trim();
     int actionIndex = command.indexOf("=");
     if (actionIndex == -1) {
-       executeCommand(command, ""); 
+        executeCommand(command, "");
     }
-    executeCommand(command.substring(0, actionIndex), command.substring(actionIndex+1, command.length()));
+    executeCommand(command.substring(0, actionIndex), command.substring(actionIndex + 1, command.length()));
 }
 
-void bluetoothService( void * pvParameters ) {
+void bluetoothService(void* pvParameters) {
     // writeToEEPROM("Shivanugraha-office", "", 0, 30, false);
     // writeToEEPROM("Harigadde@39", "", 31, 60, false);
-   
+
     SerialBT.begin("codingloop");
     while (isPairEnabled) {
-        if(SerialBT.available())
-        {
+        if (SerialBT.available()) {
             BTData = SerialBT.readString();
             Serial.println(BTData.c_str());
             parseAndExecCommand(BTData);
         }
-  }
-  SerialBT.end();
-   Serial.write("Ending pairmode");
+    }
+    SerialBT.end();
+    Serial.write("Ending pairmode");
     vTaskDelete(NULL);
 }

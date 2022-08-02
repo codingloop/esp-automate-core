@@ -10,5 +10,6 @@
     "initializer_list": "cpp",
     "*.tcc": "cpp",
     "utility": "cpp"
-  }
+  },
+  "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 4, ColumnLimit: 0}"
 }
