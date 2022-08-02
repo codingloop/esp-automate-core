@@ -7,8 +7,7 @@
 WebServer server(80);
 
 void startBluetoothService() {
-    xTaskCreatePinnedToCore(bluetoothService, "BlueetoothService", 10000, NULL, 1, NULL, 1);
-    int a = T1;
+    xTaskCreate(bluetoothService, "BlueetoothService", 10000, NULL, tskIDLE_PRIORITY, NULL);
 }
 
 // void handleRoot() {
@@ -55,6 +54,7 @@ void setup() {
     }
 
     Serial.println(WiFi.localIP());
+    writeToEEPROM(WiFi.localIP().toString(), "", ip_s, ip_e, false);
 
     // server.on("/", handleRoot);
     server.onNotFound(handleNotFound);

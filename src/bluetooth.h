@@ -1,6 +1,10 @@
 #include "BluetoothSerial.h"
 #include "utils.h"
 
+#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
+#error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
+#endif
+
 volatile bool isPairEnabled = true;
 BluetoothSerial SerialBT;
 String BTData;
@@ -15,14 +19,15 @@ void executeCommand(String cmd, String value) {
     Serial.println(cmd);
     Serial.println(value);
     if (cmd == "ssid") {
-        writeToEEPROM(value, "", 0, 30, false);
+        writeToEEPROM(value, "", ssid_s, ssid_e, false);
     } else if (cmd == "password") {
-        writeToEEPROM(value, "", 31, 60, false);
+        writeToEEPROM(value, "", pwd_s, pwd_e, false);
     } else if (cmd == "reset") {
         resetESP();
     } else if (cmd == "disable") {
         disableBluetoothService();
-        Serial.write("disabling pairmode");
+    } else if (cmd == "getip") {
+        SerialBT.print(getIP());
     }
 }
 
@@ -36,9 +41,6 @@ void parseAndExecCommand(String command) {
 }
 
 void bluetoothService(void* pvParameters) {
-    // writeToEEPROM("Shivanugraha-office", "", 0, 30, false);
-    // writeToEEPROM("Harigadde@39", "", 31, 60, false);
-
     SerialBT.begin("codingloop");
     while (isPairEnabled) {
         if (SerialBT.available()) {
@@ -46,6 +48,7 @@ void bluetoothService(void* pvParameters) {
             Serial.println(BTData.c_str());
             parseAndExecCommand(BTData);
         }
+        vTaskDelay(1000);
     }
     SerialBT.end();
     Serial.write("Ending pairmode");

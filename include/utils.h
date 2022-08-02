@@ -45,12 +45,16 @@ boolean writeToEEPROM(String newValue, String oldValue, byte startByte, byte end
     return true;
 }
 
-const String routerSSID() {
+String routerSSID() {
     return readFromEEPROM(ssid_s, ssid_e);
 }
 
-const String routerPassword() {
-    return readFromEEPROM(ssid_s, ssid_e);
+String routerPassword() {
+    return readFromEEPROM(pwd_s, pwd_e);
+}
+
+String getIP() {
+    return readFromEEPROM(ip_s, ip_e);
 }
 
 void resetESP() {
