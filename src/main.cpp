@@ -8,6 +8,7 @@ WebServer server(80);
 
 void startBluetoothService() {
     xTaskCreatePinnedToCore(bluetoothService, "BlueetoothService", 10000, NULL, 1, NULL, 1);
+    int a = T1;
 }
 
 // void handleRoot() {
@@ -44,21 +45,15 @@ void setup() {
     Serial.begin(115200);
     EEPROM.begin(512);
     startBluetoothService();
-    Serial.println(routerSSID().c_str());
-    Serial.println(routerPassword().c_str());
 
     WiFi.mode(WIFI_STA);
     WiFi.begin(routerSSID().c_str(), routerPassword().c_str());
-    // WiFi.begin(ssid, password);
 
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
         Serial.print(".");
     }
 
-    Serial.println("");
-    Serial.println("WiFi connected.");
-    Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
 
     // server.on("/", handleRoot);

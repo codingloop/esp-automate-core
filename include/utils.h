@@ -3,6 +3,7 @@
 
 #include "Arduino.h"
 #include "EEPROM.h"
+#include "configs.h"
 
 String readFromEEPROM(byte start, byte end) {
     String readValue = "";
@@ -45,11 +46,11 @@ boolean writeToEEPROM(String newValue, String oldValue, byte startByte, byte end
 }
 
 const String routerSSID() {
-    return readFromEEPROM(0, 30);
+    return readFromEEPROM(ssid_s, ssid_e);
 }
 
 const String routerPassword() {
-    return readFromEEPROM(31, 60);
+    return readFromEEPROM(ssid_s, ssid_e);
 }
 
 void resetESP() {
