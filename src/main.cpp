@@ -1,13 +1,11 @@
-#include "Arduino.h"
 #include <WebServer.h>
 #include <WiFiClient.h>
 #include <EEPROM.h>
 #include <bluetooth.h>
+#include <utils.h>
 
 
 WebServer server(80);
-const char * ssid = "Shivanugraha-Office";
-const char * password = "Harigadde@39";
 
 
 

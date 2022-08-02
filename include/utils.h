@@ -1,3 +1,6 @@
+#ifndef Utils_H
+#define Utils_H
+
 #include "Arduino.h"
 #include "EEPROM.h"
 
@@ -59,3 +62,5 @@ const String routerPassword() {
 void resetESP() {
     
 }
+
+#endif
