@@ -15,9 +15,6 @@ void disableBluetoothService() {
 
 void executeCommand(String cmd, String value) {
     value.trim();
-    // Serial.println("Received cmd and value");
-    // Serial.println(cmd);
-    // Serial.println(value);
     if (cmd == "ssid") {
         writeToEEPROM(value, "", ssid_s, ssid_e, false);
     } else if (cmd == "password") {

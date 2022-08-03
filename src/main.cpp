@@ -10,19 +10,9 @@ void startBluetoothService() {
     xTaskCreate(bluetoothService, "BlueetoothService", 10000, NULL, tskIDLE_PRIORITY, NULL);
 }
 
-// void handleRoot() {
-//   String q1=server.arg("pin");
-//   if (q1=="high") {
-//     digitalWrite(ledPIN, HIGH);
-//   } else if (q1=="low") {
-//     digitalWrite(ledPIN, LOW);
-//   }
-//   server.send(200, "text/html", MAIN_page);
-// }
-
-void changedata() {
-    String q1 = server.arg("pin");
-    server.send(200, "text", "Invalid data provided");
+// Web server endpoints
+void handleRoot() {
+    server.send(200, "text/html", "Home");
 }
 
 void handleNotFound() {
@@ -40,9 +30,16 @@ void handleNotFound() {
     server.send(404, "text/plain", message);
 }
 
+void readAnalogValue() {
+    server.send(200, "text/html", String(analogRead(A6)));
+}
+
+// ENd web server endpoints
+
 void setup() {
     Serial.begin(115200);
     EEPROM.begin(512);
+
     startBluetoothService();
 
     WiFi.mode(WIFI_STA);
@@ -53,10 +50,10 @@ void setup() {
         Serial.print(".");
     }
 
-    Serial.println(WiFi.localIP());
     writeToEEPROM(WiFi.localIP().toString(), "", ip_s, ip_e, false);
 
-    // server.on("/", handleRoot);
+    server.on("/", handleRoot);
+    server.on("/analogread", readAnalogValue);
     server.onNotFound(handleNotFound);
     server.begin();
 }
