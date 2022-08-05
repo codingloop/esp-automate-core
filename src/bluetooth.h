@@ -25,6 +25,8 @@ void executeCommand(String cmd, String value) {
         disableBluetoothService();
     } else if (cmd == "getip") {
         SerialBT.println(getIP());
+    } else if (cmd == "ota") {
+        otaUpdate(value);
     }
 }
 
