@@ -54,7 +54,7 @@ void setup() {
     writeToEEPROM(WiFi.localIP().toString(), "", ip_s, ip_e, false);
 
     server.on("/", handleRoot);
-    server.on("/analogread", readAnalogValue);
+    server.on("/analog/a6", readAnalogValue);
     server.onNotFound(handleNotFound);
     server.begin();
 }
