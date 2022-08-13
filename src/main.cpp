@@ -34,8 +34,6 @@ void readAnalogValue() {
     server.send(200, "text/html", String(analogRead(A6)));
 }
 
-// ENd web server endpoints
-
 void setup() {
     Serial.begin(115200);
     EEPROM.begin(512);
